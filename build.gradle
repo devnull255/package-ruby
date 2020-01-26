@@ -19,3 +19,9 @@ task getSource(type: Exec, description: "Downloads source from URL") {
       println "Copied Ruby Source archive"
     }
 }
+
+task unPackSource(type: Copy, dependsOn: getSource) {
+    from(tarTree(rubyTarFile))
+    into "$buildDir/resources"
+}
+
