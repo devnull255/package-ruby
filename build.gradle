@@ -20,8 +20,23 @@ task getSource(type: Exec, description: "Downloads source from URL") {
     }
 }
 
-task unPackSource(type: Copy, dependsOn: getSource) {
+task unpackSource(type: Copy, dependsOn: getSource) {
     from(tarTree(rubyTarFile))
     into "$buildDir/resources"
+}
+
+task configure(type: Exec, description: "Configures Make build", dependsOn: unpackSource) {
+    workingDir "$buildDir/resources/$rubySourceDir"
+    commandLine "./configure", "--prefix=${prefix}"
+    doFirst {
+       println "workingDir: $workingDir"
+       println "prefix: $prefix"
+    }
+}
+
+task make(type: Exec, description: "Builds ruby binaries", dependsOn: configure) {
+    workingDir "$buildDir/resources/$rubySourceDir"
+    commandLine "make"
+    commandLine "make", "test"
 }
 
